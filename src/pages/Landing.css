@@ -29,10 +29,13 @@ body {
 
 .container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+    "Header"
+    "Content"
+    "Footer";
   width: 100vw;
   height: 100dvh;
   min-height: 100dvh;
@@ -56,12 +59,21 @@ body {
   pointer-events: none;
 }
 
+/* Move .content into Content grid area instead of freely positioned */
 .content {
   position: relative;
   z-index: 1;
   text-align: center;
   max-width: 1440px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 0;
+  grid-area: Content;
+  align-self: center;
 }
 
 .title {
@@ -70,11 +82,13 @@ body {
   font-size: clamp(48px, 10vw, 180px);
   line-height: 1.2;
   letter-spacing: -0.04em;
-  margin-bottom: 60px;
+  margin-bottom: 0;
   animation: fadeInUp 1s ease-out;
   color: transparent;
   user-select: none;
   isolation: isolate;
+  /* Remove grid-area: Header; */
+  /* Remove align-self: center to let layout be handled by content's flex container if desired */
 }
 
 .title::before,
@@ -119,8 +133,10 @@ body {
   font-size: clamp(20px, 3vw, 48px);
   line-height: 1.2;
   letter-spacing: -0.04em;
-  margin-bottom: 60px;
+  margin-bottom: 0;
   animation: fadeInUp 1.2s ease-out;
+  /* Remove grid-area: Content; */
+  align-self: center;
 }
 
 .description-normal {
@@ -217,6 +233,8 @@ body {
   text-decoration: none;
   animation: fadeInUp 1.4s ease-out;
   box-shadow: 0 10px 30px rgba(83, 43, 220, 0.3);
+  grid-area: Footer;
+  align-self: center;
 }
 
 .explore-btn:hover {
@@ -258,12 +276,29 @@ body {
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 20px 5px;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "Header"
+      "Content"
+      "Footer";
+  }
+  .content {
+    gap: 32px;
+    /* Remove grid layout on mobile since now flex is used. */
+    /* grid-template-rows: auto auto auto; */
+    /* grid-template-areas:
+      "Header"
+      "Content"
+      "Footer"; */
+  }
   .title {
-    margin-bottom: 40px;
+    margin-bottom: 0;
     font-size: clamp(32px, 12vw, 72px);
   }
   .description {
-    margin-bottom: 40px;
+    margin-bottom: 0;
     padding: 0 20px;
     font-size: clamp(16px, 5vw, 28px);
   }

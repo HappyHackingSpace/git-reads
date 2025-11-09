@@ -11,6 +11,12 @@ A modern, interactive web application that dynamically displays the [Awesome Hac
 
 This project provides a beautiful, responsive interface for browsing the Awesome Hackathon repository's comprehensive list of tools and resources. The application fetches content directly from GitHub, parses markdown, and presents it with an interactive table of contents and smooth navigation.
 
+<img width="1920" height="1440" alt="image" src="https://github.com/user-attachments/assets/67186149-0d77-428a-886b-6196b98daa42" />
+<img width="1920" height="1440" alt="image" src="https://github.com/user-attachments/assets/eee5d67a-d068-4fb8-a9e6-fa51c57cfcb2" />
+
+
+
+
 ## Features
 
 - **Dynamic Content Loading**: Fetches README content directly from GitHub API using Octokit
@@ -127,24 +133,6 @@ The Document page is the core component that:
 - Uses Octokit SDK for authenticated GitHub API requests
 - Fetches README content via repository API endpoint
 - Falls back to base64 decoding if raw URL unavailable
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Connect your GitHub repository to [Vercel](https://vercel.com)
-2. Add `VITE_GITHUB_TOKEN` to environment variables in project settings
-3. Deploy automatically on every push to main branch
-
-The app will automatically rebuild when the source repository is updated, ensuring users always see the latest content.
-
-### Other Platforms
-
-The project can be deployed to any static hosting service:
-
-- **Netlify**: Connect GitHub repo and add environment variables
-- **GitHub Pages**: Use GitHub Actions for automated deployment
-- **Cloudflare Pages**: Similar setup to Vercel
 
 ## License
 

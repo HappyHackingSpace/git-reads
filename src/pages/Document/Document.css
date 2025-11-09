@@ -2,7 +2,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Document page background with square pattern */
 body:has(.document-wrapper) {
   background: #17152d;
   position: relative;
@@ -33,10 +32,8 @@ body:has(.document-wrapper)::before {
 .document-container {
   display: grid;
   grid-template-columns: 250px auto;
-  grid-template-rows: 100px auto;
   grid-template-areas: 
-  "header header"
-  "sidebar content";
+    "sidebar content";
   gap: 2rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -48,8 +45,9 @@ body:has(.document-wrapper)::before {
 
 .document-header {
   grid-area: header;
+  margin-bottom: 0;
+  min-height: 0;
 }
-
 .document-title {
   font-size: 2.5em;
   color: #532bdc;
@@ -136,6 +134,8 @@ body:has(.document-wrapper)::before {
 .document-content {
   grid-area: content;
   max-width: 800px;
+  /* Remove any top margin that could cause a gap */
+  margin-top: 0;
 }
 
 .document-markdown {
@@ -292,7 +292,6 @@ body:has(.document-wrapper)::before {
 @media (max-width: 768px) {
   .document-container {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
     grid-template-areas: 
       "header"
       "content";
@@ -305,6 +304,11 @@ body:has(.document-wrapper)::before {
 
   .document-title {
     font-size: 2em;
+  }
+
+  .document-header {
+    margin-bottom: 0;
+    min-height: 0;
   }
 }
 

@@ -23,9 +23,9 @@ export default function Landing() {
           <span className="description-gradient">Awesome Hackathon</span>
         </p>
 
-        <a href="#" className="explore-btn">
-          <span className="explore-text">Under Development</span>
-          {/* <div className="arrow"></div> */}
+        <a href="/document" className="explore-btn">
+          <span className="explore-text">Explore</span>
+          <div className="arrow"></div>
         </a>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import './DocumentContent.css'
 import { DocumentMarkdown } from "./DocumentMarkdown";
 
 export function DocumentContent({

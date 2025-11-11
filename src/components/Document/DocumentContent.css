@@ -1,0 +1,5 @@
+.document-content {
+    grid-area: content;
+    max-width: 860px;
+    margin-top: 0;
+  }

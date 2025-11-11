@@ -1,4 +1,5 @@
 
+import './DocumentMarkdown.css'
 import remarkEmoji from "remark-emoji";
 import ReactMarkdown from "react-markdown";
 import { createHeadingComponent } from "@/utils/createHeadingComponent";

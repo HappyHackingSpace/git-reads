@@ -1,4 +1,4 @@
-import "./Header.css";
+  import "./Header.css";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
@@ -7,11 +7,22 @@ const Header: React.FC = () => {
 
   const isLandingPage = location.pathname === "/";
 
+  const logoSrc = isLandingPage
+    ? "/public/papyr-logo-light.png"
+    : "/public/papyr-logo-dark.png";
+
   return (
     <header className="header">
       <a href="/">
         <>
-          <img className="header__logo" />
+          <img
+            className={
+              "header__logo" +
+              (isLandingPage ? " header__logo--landing" : "")
+            }
+            src={logoSrc}
+            alt="Papyr Logo"
+          />
           <span
             className={
               `header__title` +

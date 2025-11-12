@@ -1,15 +1,35 @@
+:root {
+  --logo-height: 6em;
+  --logo-padding: 1.5em;
+  --logo-hover-shadow: 0 0 2em #646cffaa;
+  --logo-react-hover-shadow: 0 0 2em #61dafbaa;
+  --card-padding: 2em;
+  --read-the-docs-color: #888;
+
+  --app-bg-light: #fff;
+  --app-color-light: #222;
+  --card-bg-light: #f8f8fa;
+  --read-the-docs-color-light: #888;
+
+  --app-bg-dark: #23232c;
+  --app-color-dark: #fafafa;
+  --card-bg-dark: #2d2d40;
+  --read-the-docs-color-dark: #aaa;
+
+  --main-grid-header-size: 64px;
+}
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: var(--logo-height);
+  padding: var(--logo-padding);
   will-change: filter;
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(var(--logo-hover-shadow));
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(var(--logo-react-hover-shadow));
 }
 
 @keyframes logo-spin {
@@ -28,38 +48,38 @@
 }
 
 .card {
-  padding: 2em;
+  padding: var(--card-padding);
 }
 
 .read-the-docs {
-  color: #888;
+  color: var(--read-the-docs-color);
 }
 
 @media (prefers-color-scheme: light) {
   .app-root-grid {
-    background: #fff;
-    color: #222;
+    background: var(--app-bg-light);
+    color: var(--app-color-light);
   }
   .card {
-    background: #f8f8fa;
-    color: #222;
+    background: var(--card-bg-light);
+    color: var(--app-color-light);
   }
   .read-the-docs {
-    color: #888;
+    color: var(--read-the-docs-color-light);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .app-root-grid {
-    background: #23232c;
-    color: #fafafa;
+    background: var(--app-bg-dark);
+    color: var(--app-color-dark);
   }
   .card {
-    background: #2d2d40;
-    color: #fafafa;
+    background: var(--card-bg-dark);
+    color: var(--app-color-dark);
   }
   .read-the-docs {
-    color: #aaa;
+    color: var(--read-the-docs-color-dark);
   }
 }
 
@@ -68,7 +88,7 @@
   grid-template-areas:
     "header"
     "main";
-  grid-template-rows: 64px 1fr;
+  grid-template-rows: var(--main-grid-header-size) 1fr;
   min-height: 100vh;
 }
 

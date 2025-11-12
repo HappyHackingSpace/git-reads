@@ -17,6 +17,15 @@ html {
   --doc-section-bg: #1d1835;
   --doc-error: #ff6b6b;
   --doc-error-bg: rgba(255, 107, 107, 0.1);
+  --github-link-bg: linear-gradient(135deg, #38304f 68%, #7a5fff 100%);
+  --github-link-color: #fff;
+  --github-link-border: #fff3;
+  --github-link-shadow: 0 4px 32px #4e37b933, 0 1.5px 0 #fff2;
+  --github-link-hover-bg: linear-gradient(120deg, #f2edff 75%, #7a5fff 100%);
+  --github-link-hover-color: #432eda;
+  --github-link-hover-border: #7a5fff;
+  --github-link-hover-shadow: 0 12px 38px #7a5fff99, 0 3px 0 #fff5;
+  --github-link-active-shadow: 0 3px 12px #7a5fff70;
 }
 
 @media (prefers-color-scheme: light) {
@@ -35,6 +44,15 @@ html {
     --doc-section-bg: #eae5ff;
     --doc-error: #b50b0b;
     --doc-error-bg: rgba(181, 11, 11, 0.09);
+    --github-link-bg: linear-gradient(135deg, #eceaff 68%, #4b2fda 100%);
+    --github-link-color: #432eda;
+    --github-link-border: #ede8fd;
+    --github-link-shadow: 0 4px 24px #cabaff33, 0 1.5px 0 #ede8fd;
+    --github-link-hover-bg: linear-gradient(120deg, #432eda 85%, #eceaff 100%);
+    --github-link-hover-color: #fff;
+    --github-link-hover-border: #4b2fda;
+    --github-link-hover-shadow: 0 12px 36px #cabaff50, 0 3px 0 #ede8fd;
+    --github-link-active-shadow: 0 3px 12px #cabaff40;
   }
 }
 
@@ -323,15 +341,11 @@ body:has(.document-wrapper)::before {
   justify-content: center;
   width: 52px;
   height: 52px;
-  background: linear-gradient(
-    135deg,
-    var(--doc-title-color) 68%,
-    var(--doc-link) 100%
-  );
-  color: #fff;
+  background: var(--github-link-bg);
+  color: var(--github-link-color);
   border-radius: 50%;
-  box-shadow: 0 4px 32px #532bdc33, 0 1.5px 0 #fff2;
-  border: 2.5px solid #fff3;
+  box-shadow: var(--github-link-shadow);
+  border: 2.5px solid var(--github-link-border);
   outline: none;
   text-decoration: none;
   font-size: 1.18em;
@@ -342,18 +356,14 @@ body:has(.document-wrapper)::before {
 
 .document-github-repo-link:hover,
 .document-github-repo-link:focus {
-  background: linear-gradient(
-    120deg,
-    var(--doc-link-hover) 75%,
-    var(--doc-header-color) 100%
-  );
-  color: var(--doc-title-color);
-  border-color: var(--doc-link);
+  background: var(--github-link-hover-bg);
+  color: var(--github-link-hover-color);
+  border-color: var(--github-link-hover-border);
   transform: translateY(-6px) scale(1.075) rotate(-6deg);
-  box-shadow: 0 12px 38px #7a5fff99, 0 3px 0 #fff5;
+  box-shadow: var(--github-link-hover-shadow);
 }
 
 .document-github-repo-link:active {
   transform: scale(0.96) translateY(0px);
-  box-shadow: 0 3px 12px #7a5fff70;
+  box-shadow: var(--github-link-active-shadow);
 }

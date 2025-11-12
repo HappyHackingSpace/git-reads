@@ -1,13 +1,33 @@
+:root {
+  --header-height: 64px;
+  --header-padding-x: 2rem;
+  --header-z-index: 99;
+  --header-logo-size: 40px;
+  --header-logo-margin-right: 16px;
+  --header-title-font-family: "Inter", "system-ui", sans-serif;
+  --header-title-font-size: 22px;
+  --header-title-font-weight: 700;
+  --header-title-letter-spacing: 1px;
+  --header-title-color: #fff;
+  --header-title-color-dark: #fff;
+  --header-title-color-light: #19191e;
+  --header-title-color-landing-white: #fff;
+  --header-logo-url-dark: url("/papyr-logo-dark.png");
+  --header-logo-url-light: url("/papyr-logo-light.png");
+}
+
 .header {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 64px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  z-index: 99;
+  padding: 0 var(--header-padding-x);
+  z-index: var(--header-z-index);
   background: none;
-  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   grid-area: header;
 }
 
@@ -18,23 +38,23 @@
 }
 
 .header__logo {
-  height: 40px;
-  width: 40px;
-  margin-right: 16px;
-  content: url('/papyr-logo-dark.png');
+  height: var(--header-logo-size);
+  width: var(--header-logo-size);
+  margin-right: var(--header-logo-margin-right);
+  content: var(--header-logo-url-dark);
 }
 
 .header__title {
-  font-family: 'Inter', 'system-ui', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-family: var(--header-title-font-family);
+  font-size: var(--header-title-font-size);
+  font-weight: var(--header-title-font-weight);
+  letter-spacing: var(--header-title-letter-spacing);
   color: var(--header-title-color, #fff);
   white-space: nowrap;
 }
 
 .header__title--landing-white {
-  color: #fff !important;
+  color: var(--header-title-color-landing-white) !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,10 +65,10 @@
     color: var(--header-title-color-dark, #fff);
   }
   .header__title--landing-white {
-    color: #fff !important;
+    color: var(--header-title-color-landing-white) !important;
   }
   .header__logo {
-    content: url('/papyr-logo-light.png');
+    content: var(--header-logo-url-light);
   }
 }
 
@@ -60,9 +80,9 @@
     color: var(--header-title-color-light, #19191e);
   }
   .header__title--landing-white {
-    color: #fff !important;
+    color: var(--header-title-color-landing-white) !important;
   }
   .header__logo {
-    content: url('/papyr-logo-dark.png');
+    content: var(--header-logo-url-dark);
   }
 }

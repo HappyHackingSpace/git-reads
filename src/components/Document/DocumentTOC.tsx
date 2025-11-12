@@ -13,7 +13,9 @@ export function DocumentTOC({ toc }: { toc: TOCItem[] }) {
 
   return (
     <nav className="document-toc">
-      <h2 className="document-toc-title">{tocTitle}</h2>
+      <a href={`#${toc[0]?.id || ""}`} className="document-toc-title">
+        {tocTitle}
+      </a>
       <ul className="document-toc-list">
         {filteredToc.map((item, index) => (
           <li

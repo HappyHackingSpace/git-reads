@@ -4,18 +4,22 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { createHeadingComponent } from "@/utils/createHeadingComponent";
-import { useRepository } from "@/contexts/RepositoryContext";
+import { useRepository } from "@/hooks/useRepository";
 
 export function DocumentMarkdown({ markdown }: { markdown: string }) {
   const { repositoryInfo } = useRepository();
 
   const processedMarkdown = markdown.replace(
     /!\[([^\]]*)\]\((?!http)([^)]+)\)/g,
-    (match, alt, src) => {
+    (_match: string, alt: string, src: string) => {
+      const altText = (alt || "").trim();
+      const relSrc = (src || "").trim();
+      if (!relSrc) return `![${altText}](${relSrc})`;
       const branch = repositoryInfo.branch || "main";
-      const cleanSrc = src.startsWith("/") ? src.slice(1) : src;
+      const cleanSrc = relSrc.replace(/^\/+/, "");
       const fullUrl = `https://raw.githubusercontent.com/${repositoryInfo.owner}/${repositoryInfo.repo}/${branch}/${cleanSrc}`;
-      return `![${alt}](${fullUrl})`;
+
+      return `![${altText}](${fullUrl})`;
     }
   );
 
@@ -45,12 +49,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               const cleanHref = href.startsWith("/") ? href.slice(1) : href;
               const githubUrl = `https://github.com/${repositoryInfo.owner}/${repositoryInfo.repo}/blob/${branch}/${cleanHref}`;
               return (
-                <a
-                  href={githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  {...props}
-                >
+                <a href={githubUrl} rel="noopener noreferrer" {...props}>
                   {children}
                 </a>
               );

@@ -5,8 +5,8 @@ import { FetchReadme } from "@/lib/github";
 import { parseTOC } from "@/lib/parser";
 import { DocumentContent } from "@/components/Document/DocumentContent";
 import { DocumentTOC } from "@/components/Document/DocumentTOC";
-import { useRepository } from "@/contexts/RepositoryContext";
 import { FaGithub } from "react-icons/fa";
+import { useRepository } from "@/hooks/useRepository";
 
 export default function Document() {
   const { repositoryInfo } = useRepository();

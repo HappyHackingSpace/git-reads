@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { useState, ReactNode } from "react";
+import { RepositoryContext } from "./RepositoryContextBase";
 
 export interface RepositoryInfo {
   owner: string;
@@ -6,7 +7,7 @@ export interface RepositoryInfo {
   branch?: string;
 }
 
-interface RepositoryContextType {
+export interface RepositoryContextType {
   repositoryInfo: RepositoryInfo;
   setRepositoryInfo: (info: RepositoryInfo) => void;
 }
@@ -17,10 +18,6 @@ const defaultRepository: RepositoryInfo = {
   branch: "main",
 };
 
-const RepositoryContext = createContext<RepositoryContextType | undefined>(
-  undefined
-);
-
 export function RepositoryProvider({ children }: { children: ReactNode }) {
   const [repositoryInfo, setRepositoryInfo] =
     useState<RepositoryInfo>(defaultRepository);
@@ -30,12 +27,4 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
       {children}
     </RepositoryContext.Provider>
   );
-}
-
-export function useRepository() {
-  const context = useContext(RepositoryContext);
-  if (!context) {
-    throw new Error("useRepository must be used within a RepositoryProvider");
-  }
-  return context;
 }

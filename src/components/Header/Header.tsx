@@ -1,4 +1,4 @@
-  import "./Header.css";
+import "./Header.css";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
@@ -17,8 +17,7 @@ const Header: React.FC = () => {
         <>
           <img
             className={
-              "header__logo" +
-              (isLandingPage ? " header__logo--landing" : "")
+              "header__logo" + (isLandingPage ? " header__logo--landing" : "")
             }
             src={logoSrc}
             alt="Papyr Logo"

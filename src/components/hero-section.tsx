@@ -77,18 +77,62 @@ export default function HeroSection() {
                   function details to project-wide connections.
                 </TextEffect>
 
-                <div className="flex w-full max-w-xl items-center gap-2 mt-12">
-                  <Button
-                    size="lg"
-                    className="rounded-xl px-5 text-base cursor-pointer"
-                    onClick={handleDocumentRedirect}
-                  >
-                    Try GitReads
-                  </Button>
-                </div>
+                <AnimatedGroup
+                  variants={{
+                    container: heroShowcaseVariants.container,
+                    item: {
+                      hidden: {
+                        opacity: 0,
+                        filter: "blur(8px)",
+                        y: 56,
+                      },
+                      visible: {
+                        opacity: 1,
+                        filter: "blur(0px)",
+                        y: 0,
+                        transition: {
+                          type: "spring" as const,
+                          bounce: 0.22,
+                          duration: 0.8,
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <div className="flex w-full max-w-xl items-center gap-2 mt-12">
+                    <Button
+                      size="lg"
+                      className="rounded-xl px-5 text-base cursor-pointer"
+                      onClick={handleDocumentRedirect}
+                    >
+                      Try GitReads
+                    </Button>
+                  </div>
+                </AnimatedGroup>
               </div>
             </div>
-            <AnimatedGroup variants={heroShowcaseVariants}>
+            <AnimatedGroup
+              variants={{
+                container: heroShowcaseVariants.container,
+                item: {
+                  hidden: {
+                    opacity: 0,
+                    filter: 'blur(8px)',
+                    y: 56,
+                  },
+                  visible: {
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    y: 0,
+                    transition: {
+                      type: "spring" as const,
+                      bounce: 0.22,
+                      duration: 0.8,
+                    },
+                  },
+                },
+              }}
+            >
               <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-5xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                   <img

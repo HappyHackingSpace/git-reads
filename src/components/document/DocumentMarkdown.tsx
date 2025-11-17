@@ -5,15 +5,9 @@ import rehypeRaw from "rehype-raw";
 import { useRepository } from "@/hooks/useRepository";
 import { generateHeadingId } from "@/utils/generateHeadingId";
 
-// ============================================
-// DocumentMarkdown Component
-// ============================================
 export function DocumentMarkdown({ markdown }: { markdown: string }) {
   const { repositoryInfo } = useRepository();
 
-  // ============================================
-  // Image URL Processing
-  // ============================================
   const processedMarkdown = markdown.replace(
     /!\[([^\]]*)\]\((?!http)([^)]+)\)/g,
     (_match: string, alt: string, src: string) => {
@@ -28,18 +22,12 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
     }
   );
 
-  // ============================================
-  // Render
-  // ============================================
   return (
     <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4 [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 [&>h3:first-child]:mt-0 [&>h4:first-child]:mt-0 [&>h5:first-child]:mt-0 [&>h6:first-child]:mt-0">
       <ReactMarkdown
         remarkPlugins={[remarkEmoji, remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          // ============================================
-          // Headings with IDs (Responsive)
-          // ============================================
           h1: ({ children, ...props }) => {
             const text = String(children);
             const id = generateHeadingId(text);
@@ -118,9 +106,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               </h6>
             );
           },
-          // ============================================
-          // Paragraphs (Responsive)
-          // ============================================
           p: ({ children, ...props }) => (
             <p
               className="mb-3 sm:mb-4 leading-6 sm:leading-7 text-foreground text-sm sm:text-base"
@@ -129,11 +114,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               {children}
             </p>
           ),
-          // ============================================
-          // Links
-          // ============================================
           a: ({ href, children, ...props }) => {
-            // Hash linkler için (anchor links) - smooth scroll yap
             if (href && href.startsWith("#")) {
               const handleHashClick = (
                 e: React.MouseEvent<HTMLAnchorElement>
@@ -143,12 +124,9 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
 
                 const targetId = href.replace("#", "").trim();
 
-                // Önce direkt ID ile dene
                 let element = document.getElementById(targetId);
 
-                // Bulunamazsa, markdown'daki link formatına göre normalize et
                 if (!element) {
-                  // GitHub markdown formatı: lowercase, özel karakterleri kaldır, boşlukları tire ile değiştir
                   const normalizedId = targetId
                     .toLowerCase()
                     .replace(/[^\w\s-]/g, "")
@@ -159,7 +137,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
                   element = document.getElementById(normalizedId);
                 }
 
-                // Hala bulunamazsa, tüm heading'leri kontrol et
                 if (!element) {
                   const headings = document.querySelectorAll(
                     "h1, h2, h3, h4, h5, h6"
@@ -172,7 +149,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
                 }
 
                 if (element) {
-                  const headerOffset = 100; // Sticky header height + offset
+                  const headerOffset = 100;
                   const elementPosition = element.getBoundingClientRect().top;
                   const offsetPosition =
                     elementPosition + window.pageYOffset - headerOffset;
@@ -196,7 +173,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               );
             }
 
-            // Relative linkler için (GitHub'a yönlendir)
             if (
               href &&
               !href.startsWith("http") &&
@@ -219,7 +195,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               );
             }
 
-            // External linkler için
             return (
               <a
                 href={href}
@@ -232,9 +207,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               </a>
             );
           },
-          // ============================================
-          // Lists (Responsive)
-          // ============================================
           ul: ({ children, ...props }) => (
             <ul
               className="mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2"
@@ -259,9 +231,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               {children}
             </li>
           ),
-          // ============================================
-          // Code Blocks (Responsive)
-          // ============================================
           code: ({ className, children, ...props }: any) => {
             const isInline = !className;
             return isInline ? (
@@ -285,9 +254,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               {children}
             </pre>
           ),
-          // ============================================
-          // Blockquotes (Responsive)
-          // ============================================
           blockquote: ({ children, ...props }) => (
             <blockquote
               className="mb-3 sm:mb-4 pl-3 sm:pl-4 border-l-4 border-primary/50 italic text-muted-foreground text-sm sm:text-base"
@@ -296,11 +262,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               {children}
             </blockquote>
           ),
-          // ============================================
-          // Images (Responsive)
-          // ============================================
           img: ({ src, alt, ...props }) => {
-            // Eğer src yoksa, orijinal src'i döndür
             if (!src) {
               return (
                 <img
@@ -312,7 +274,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               );
             }
 
-            // Base64 encoded images - olduğu gibi kullan
             if (src.startsWith("data:image/")) {
               return (
                 <img
@@ -324,15 +285,11 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               );
             }
 
-            // External URLs (http/https) - olduğu gibi kullan
             if (
               src.startsWith("http://") ||
               src.startsWith("https://") ||
               src.startsWith("//")
             ) {
-              // GitHub blob URL'lerini raw URL'e çevir
-              // Örnek: https://github.com/owner/repo/blob/branch/path/image.png
-              // -> https://raw.githubusercontent.com/owner/repo/branch/path/image.png
               const githubBlobMatch = src.match(
                 /^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/
               );
@@ -360,9 +317,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
             }
 
             const branch = repositoryInfo.branch || "main";
-            const cleanSrc = src
-              .replace(/^\.\//, "")
-              .replace(/^\/+/, "");
+            const cleanSrc = src.replace(/^\.\//, "").replace(/^\/+/, "");
 
             const githubRawUrl = `https://raw.githubusercontent.com/${repositoryInfo.owner}/${repositoryInfo.repo}/${branch}/${cleanSrc}`;
 
@@ -375,9 +330,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               />
             );
           },
-          // ============================================
-          // Tables (Responsive)
-          // ============================================
           table: ({ children, ...props }) => (
             <div className="mb-3 sm:mb-4 overflow-x-auto -mx-2 sm:mx-0">
               <table
@@ -409,9 +361,6 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               {children}
             </td>
           ),
-          // ============================================
-          // Horizontal Rule
-          // ============================================
           hr: ({ ...props }) => (
             <hr className="my-6 sm:my-8 border-border" {...props} />
           ),

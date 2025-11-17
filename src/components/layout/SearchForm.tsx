@@ -22,7 +22,6 @@ export function SearchForm(props: React.ComponentProps<"form">) {
       .catch(() => setToc([]));
   }, [repositoryInfo]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (inputRef.current && !inputRef.current.contains(e.target as Node)) setIsOpen(false);

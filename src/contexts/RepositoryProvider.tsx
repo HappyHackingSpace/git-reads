@@ -3,8 +3,8 @@ import { useState, type ReactNode } from "react";
 import { RepositoryContext } from "./RepositoryContext";
 
 const defaultRepository: RepositoryInfo = {
-    owner: "HazarBakir",
-    repo: "void_blade",
+    owner: "Happyhackingspace",
+    repo: "awesome-hackathon",
     branch: "main",
   };
   

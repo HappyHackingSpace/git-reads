@@ -118,10 +118,10 @@ function AnimatedGroup({
   const itemVariants = variants?.item || selectedVariants.item;
 
   // Get correct motion component for container and items
-  const MotionComponent = motion(
+  const MotionComponent = motion.create(
     AsComponent as React.ElementType
   ) as typeof motion.div;
-  const MotionChild = motion(
+  const MotionChild = motion.create(
     AsChildComponent as React.ElementType
   ) as typeof motion.div;
 

@@ -56,7 +56,7 @@ export default function HeroSection() {
                   as="h1"
                   className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16"
                 >
-                  Turn your codebase into knowledge – with GitReads
+                  Discover README Files, Reimagined.
                 </TextEffect>
                 <TextEffect
                   per="line"
@@ -66,10 +66,10 @@ export default function HeroSection() {
                   as="p"
                   className="mt-8 max-w-2xl text-pretty text-lg"
                 >
-                  GitReads helps developers and teams understand, document, and
-                  onboard to large codebases rapidly. Search, visualize, and
-                  explore architecture and relationships within your code — from
-                  function details to project-wide connections.
+                  GitReads transforms ordinary GitHub documentation into an inviting,
+                  beautifully organized reading experience. Instantly dive into any repo’s README,
+                  enjoy seamless navigation across sections, and find what you need without the clutter.
+                  It’s documentation, but actually pleasant—and unmistakably yours to explore.
                 </TextEffect>
 
                 <AnimatedGroup
@@ -84,7 +84,7 @@ export default function HeroSection() {
                       className="rounded-xl px-5 text-base cursor-pointer"
                       onClick={handleDocumentRedirect}
                     >
-                      Try Prototype
+                      Experience the Demo
                     </Button>
                   </div>
                 </AnimatedGroup>

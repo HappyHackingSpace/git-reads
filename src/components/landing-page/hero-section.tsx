@@ -1,31 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
-import { AnimatedGroup } from "@/components/ui/animated-group";
 import { HeroHeader } from "./header";
 import React from "react";
-import { DotsBackground } from "./background";
-
-const heroShowcaseContainerVariants = {
-  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.75 } },
-};
-
-const heroShowcaseItemVariants = {
-  hidden: {
-    opacity: 0,
-    filter: "blur(12px)",
-    y: 12,
-  },
-  visible: {
-    opacity: 1,
-    filter: "blur(0px)",
-    y: 0,
-    transition: {
-      type: "spring" as const,
-      bounce: 0.3,
-      duration: 1.5,
-    },
-  },
-};
 
 export default function HeroSection() {
   const handleDocumentRedirect = (e: React.MouseEvent) => {
@@ -73,42 +49,30 @@ export default function HeroSection() {
                   It is documentation, but actually pleasant—and unmistakably
                   yours to explore.
                 </TextEffect>
-                <AnimatedGroup
-                  variants={{
-                    container: heroShowcaseContainerVariants,
-                    item: heroShowcaseItemVariants,
-                  }}
-                >
-                  <div className="flex w-full max-w-xl items-center gap-2 mt-12">
-                    <Button
-                      size="lg"
-                      className="rounded-xl px-5 text-base cursor-pointer"
-                      onClick={handleDocumentRedirect}
-                    >
-                      Experience the Demo
-                    </Button>
-                  </div>
-                </AnimatedGroup>
-              </div>
-            </div>
-            <AnimatedGroup
-              variants={{
-                container: heroShowcaseContainerVariants,
-                item: heroShowcaseItemVariants,
-              }}
-            >
-              <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
-                <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-5xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
-                  <img
-                    className="bg-background aspect-15/8 relative rounded-2xl"
-                    src="/hero-screenshot.png"
-                    alt="GitReads app screenshot"
-                    width={2700}
-                    height={1440}
-                  />
+
+                <div className="flex w-full max-w-xl items-center gap-2 mt-12">
+                  <Button
+                    size="lg"
+                    className="rounded-xl px-5 text-base cursor-pointer"
+                    onClick={handleDocumentRedirect}
+                  >
+                    Experience the Demo
+                  </Button>
                 </div>
               </div>
-            </AnimatedGroup>
+            </div>
+
+            <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
+              <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-5xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
+                <img
+                  className="bg-background aspect-15/8 relative rounded-2xl"
+                  src="/hero-screenshot.png"
+                  alt="GitReads app screenshot"
+                  width={2700}
+                  height={1440}
+                />
+              </div>
+            </div>
           </div>
         </section>
       </main>

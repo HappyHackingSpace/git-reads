@@ -26,6 +26,23 @@ import { FetchReadme, FetchBranches } from "@/lib/github";
 import { parseTOC } from "@/lib/parser";
 import { type TOCItem } from "@/types";
 
+function SidebarSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-3">
+      {[1, 2].map((section) => (
+        <div key={section}>
+          <div className="h-4 w-3/4 bg-muted animate-pulse rounded mb-2" />
+          <div className="flex flex-col gap-2 pl-2">
+            {[1, 2, 3].map((row) => (
+              <div key={row} className="h-3 w-full bg-muted animate-pulse rounded" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface NavSubItem {
   title: string;
   url: string;
@@ -229,7 +246,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="gap-0 [&>div:first-child>div]:mt-0">
         {isLoading ? (
-          <div className="p-4 text-sm text-muted-foreground">Loading...</div>
+          <SidebarSkeleton />
         ) : navItems.length === 0 ? (
           <div className="p-4 text-sm text-muted-foreground">
             No content available

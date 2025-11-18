@@ -37,7 +37,6 @@ export default function HeroSection() {
     <>
       <HeroHeader forceActive />
       <main className="overflow-hidden relative">
-        <DotsBackground />
         <div
           aria-hidden
           className="absolute inset-0 isolate hidden contain-strict lg:block"

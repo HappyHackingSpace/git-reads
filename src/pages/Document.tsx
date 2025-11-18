@@ -19,8 +19,41 @@ import { useRepository } from "@/hooks/useRepository";
 import { FetchReadme } from "@/lib/github";
 import { parseTOC } from "@/lib/parser";
 import { type TOCItem } from "@/types";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+
+function ReadmeSkeleton() {
+  return (
+    <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4 [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 [&>h3:first-child]:mt-0 [&>h4:first-child]:mt-0 [&>h5:first-child]:mt-0 [&>h6:first-child]:mt-0">
+      <Skeleton className="h-11 sm:h-14 w-3/4 mb-4 rounded-md" />
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-9/12 mb-2" />
+      <Skeleton className="h-4 w-2/4 mb-6" />
+      <Skeleton className="h-8 sm:h-10 w-1/3 mb-3 rounded-md" />
+      <Skeleton className="h-4 w-11/12 mb-2" />
+      <Skeleton className="h-4 w-4/6 mb-2" />
+      <div className="mb-5 space-y-2">
+        <Skeleton className="h-4 w-2/3 mb-2 ml-4" />
+        <Skeleton className="h-4 w-2/4 mb-2 ml-4" />
+        <Skeleton className="h-4 w-2/5 mb-2 ml-4" />
+      </div>
+
+      <Skeleton className="h-8 sm:h-10 w-2/6 mb-3 rounded-md" />
+      <Skeleton className="h-4 w-11/12 mb-2" />
+      <Skeleton className="h-4 w-2/3 mb-2" />
+      <div className="mb-7">
+        <Skeleton className="h-4 w-full mb-1 rounded-sm" />
+        <Skeleton className="h-4 w-11/12 mb-1 rounded-sm" />
+        <Skeleton className="h-4 w-3/5 mb-1 rounded-sm" />
+      </div>
+      <div className="mb-8">
+        <Skeleton className="h-4 w-48 mb-1 rounded" />
+        <Skeleton className="h-4 w-96 mb-1 rounded" />
+        <Skeleton className="h-4 w-36 mb-1 rounded" />
+      </div>
+    </div>
+  );
+}
 
 export default function Page() {
   const { repositoryInfo } = useRepository();
@@ -238,9 +271,7 @@ export default function Page() {
         >
           {isLoading ? (
             <div className="flex items-center justify-center h-full min-h-[200px]">
-              <div className="text-muted-foreground text-sm sm:text-base">
-                Loading README...
-              </div>
+              <ReadmeSkeleton />
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-full min-h-[200px]">

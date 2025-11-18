@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 
 import { SearchForm } from "@/components/layout/SearchForm";
-import { VersionSwitcher } from "@/components/features/VersionSwitcher";
+import { VersionSwitcher } from "@/components/document/VersionSwitcher";
 import {
   Collapsible,
   CollapsibleContent,

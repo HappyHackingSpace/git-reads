@@ -1,4 +1,4 @@
-import { Logo } from '@/components/logo'
+import { Logo } from '@/components/landing-page/logo'
 import { Menu, X } from 'lucide-react'
 import React from 'react'
 import { cn } from '@/lib/utils'

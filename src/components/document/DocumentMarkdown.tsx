@@ -291,7 +291,7 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
               src.startsWith("//")
             ) {
               const githubBlobMatch = src.match(
-                /^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/
+                /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/
               );
               if (githubBlobMatch) {
                 const [, owner, repo, branch, path] = githubBlobMatch;

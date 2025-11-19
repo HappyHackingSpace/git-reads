@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "Features", href: "#feature-roadmap" },
+  //   { name: "Solution", href: "#link" },
+  //   { name: "Pricing", href: "#link" },
+//   { name: "About", href: "#link" },
 ];
 
 const PapyrLogo = ({ className = "h-10 w-10" }: { className?: string }) => (
@@ -116,7 +116,7 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button
+                {/* <Button
                   asChild
                   variant="outline"
                   size="sm"
@@ -134,14 +134,10 @@ export const HeroHeader = () => {
                   <a href="#">
                     <span>Sign Up</span>
                   </a>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                >
-                  <a href="#">
-                    <span>Get Started</span>
+                </Button> */}
+                <Button asChild size="sm" className={"lg:inline-flex"}>
+                  <a href="/document">
+                    <span>Experience the Demo</span>
                   </a>
                 </Button>
               </div>

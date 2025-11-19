@@ -3,9 +3,9 @@ import Features from "@/components/landing-page/features-roadmap";
 import WaitList from "@/components/landing-page/waitlist";
 import { DotsBackground } from "@/components/landing-page/background";
 import { AnimatedGroup } from "@/components/ui/animated-group";
+import { HeroHeader } from "@/components/landing-page/header";
 
 export default function Landing() {
-  
   const heroShowcaseContainerVariants = {
     visible: { transition: { staggerChildren: 0.05, delayChildren: 0.75 } },
   };
@@ -29,13 +29,15 @@ export default function Landing() {
   };
   return (
     <main className="min-h-screen bg-background">
+      <HeroHeader />
+      <DotsBackground />
+
       <AnimatedGroup
         variants={{
           container: heroShowcaseContainerVariants,
           item: AnimateVariants,
         }}
       >
-        <DotsBackground />
         <HeroSection />
         <Features />
         <WaitList />

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
-import { HeroHeader } from "./header";
 import React from "react";
 
 export default function HeroSection() {
@@ -11,8 +10,7 @@ export default function HeroSection() {
 
   return (
     <>
-      <HeroHeader forceActive />
-      <main className="overflow-hidden relative">
+      <div className="relative">
         <div
           aria-hidden
           className="absolute inset-0 isolate hidden contain-strict lg:block"
@@ -75,7 +73,7 @@ export default function HeroSection() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </>
   );
 }

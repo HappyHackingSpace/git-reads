@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, Fragment } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import {
   Breadcrumb,
@@ -22,6 +23,13 @@ import { parseTOC } from "@/lib/parser";
 import { type TOCItem, type RepositoryInfo } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import {
+  createSession,
+  getSession,
+  updateSessionAccess,
+  deleteSession,
+  getSessionTimeRemaining,
+} from "@/utils/sessionManager";
 
 function ReadmeSkeleton() {
   return (
@@ -38,7 +46,6 @@ function ReadmeSkeleton() {
         <Skeleton className="h-4 w-2/4 mb-2 ml-4" />
         <Skeleton className="h-4 w-2/5 mb-2 ml-4" />
       </div>
-
       <Skeleton className="h-8 sm:h-10 w-2/6 mb-3 rounded-md" />
       <Skeleton className="h-4 w-11/12 mb-2" />
       <Skeleton className="h-4 w-2/3 mb-2" />
@@ -57,6 +64,8 @@ function ReadmeSkeleton() {
 }
 
 export default function Page() {
+  const navigate = useNavigate();
+  const { sessionId } = useParams<{ sessionId?: string }>();
   const { repositoryInfo, setRepositoryInfo } = useRepository();
   const [markdown, setMarkdown] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -64,17 +73,111 @@ export default function Page() {
   const [activeHeadingId, setActiveHeadingId] = useState<string>("");
   const [tocItems, setTocItems] = useState<TOCItem[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [hasInitialized, setHasInitialized] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-
   const [repo404, setRepo404] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const activityTimerRef = useRef<number | null>(null);
+  const countdownTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!hasInitialized) {
+    let isMounted = true;
+    if (sessionId) {
+      getSession(sessionId).then((session) => {
+        if (!isMounted) return;
+        if (session) {
+          setRepositoryInfo(session.repositoryInfo);
+          setCurrentSessionId(sessionId);
+        } else {
+          setError("Session expired or invalid. Please enter a new repository URL.");
+          setShowModal(true);
+          navigate("/document", { replace: true });
+        }
+      });
+    } else {
       setShowModal(true);
-      setHasInitialized(true);
     }
-  }, [hasInitialized]);
+    return () => { isMounted = false; };
+  }, [sessionId, navigate, setRepositoryInfo]);
+
+  useEffect(() => {
+    if (!currentSessionId) return;
+
+    let cancelled = false;
+
+    const updateCountdown = async () => {
+      const remaining = await getSessionTimeRemaining(currentSessionId);
+      if (cancelled) return;
+      setTimeRemaining(remaining);
+
+      if (remaining <= 0) {
+        setError("Session expired. Please enter a new repository URL.");
+        setShowModal(true);
+        setCurrentSessionId(null);
+        navigate("/document", { replace: true });
+      }
+    };
+
+    updateCountdown();
+    countdownTimerRef.current = window.setInterval(updateCountdown, 1000);
+
+    return () => {
+      cancelled = true;
+      if (countdownTimerRef.current) {
+        clearInterval(Number(countdownTimerRef.current));
+      }
+    };
+  }, [currentSessionId, navigate]);
+
+  useEffect(() => {
+    if (!currentSessionId) return;
+
+    let cancelled = false;
+
+    const updateActivity = async () => {
+      if (!currentSessionId) return;
+      const success = await updateSessionAccess(currentSessionId);
+      if (cancelled) return;
+      if (!success) {
+        setError("Session expired. Please enter a new repository URL.");
+        setShowModal(true);
+        setCurrentSessionId(null);
+        navigate("/document", { replace: true });
+      }
+    };
+
+    const handleActivity = () => {
+      updateActivity();
+
+      if (activityTimerRef.current) {
+        clearTimeout(Number(activityTimerRef.current));
+      }
+
+      activityTimerRef.current = window.setTimeout(() => {
+        updateActivity();
+      }, 30000);
+    };
+
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+    window.addEventListener("scroll", handleActivity);
+    window.addEventListener("click", handleActivity);
+
+    handleActivity();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+      window.removeEventListener("scroll", handleActivity);
+      window.removeEventListener("click", handleActivity);
+
+      if (activityTimerRef.current) {
+        clearTimeout(Number(activityTimerRef.current));
+      }
+    };
+  }, [currentSessionId, navigate]);
 
   useEffect(() => {
     if (!repositoryInfo?.owner || !repositoryInfo?.repo || showModal) {
@@ -83,6 +186,8 @@ export default function Page() {
       }
       return;
     }
+
+    let cancelled = false;
 
     async function loadReadme() {
       try {
@@ -93,6 +198,7 @@ export default function Page() {
           throw new Error("Missing repository info");
         }
         const content = await FetchReadme(repositoryInfo);
+        if (cancelled) return;
         setMarkdown(content);
 
         const parsedTOC = parseTOC(content);
@@ -116,11 +222,14 @@ export default function Page() {
     }
 
     loadReadme();
+
+    return () => { cancelled = true; };
   }, [repositoryInfo, showModal, setRepositoryInfo]);
+
   useEffect(() => {
     if (!markdown || isLoading) return;
 
-    const handleScroll = () => {
+    function handleScroll() {
       if (!contentRef.current) return;
 
       const headings = Array.from(
@@ -164,7 +273,7 @@ export default function Page() {
       } else {
         setActiveHeadingId("");
       }
-    };
+    }
 
     let ticking = false;
     const throttledScroll = () => {
@@ -239,11 +348,32 @@ export default function Page() {
       ? `https://github.com/${repositoryInfo.owner}/${repositoryInfo.repo}`
       : null;
 
-  const handleRepositoryChange = (newRepositoryInfo: RepositoryInfo) => {
+  const handleRepositoryChange = async (newRepositoryInfo: RepositoryInfo) => {
+    if (currentSessionId) {
+      await deleteSession(currentSessionId);
+    }
+
+    const newSessionId = await createSession(newRepositoryInfo);
+
+    if (!newSessionId) {
+      setError("Failed to create session. Please try again.");
+      return;
+    }
+
+    setCurrentSessionId(newSessionId);
+
+    navigate(`/document/${newSessionId}`, { replace: true });
+
     setRepositoryInfo(newRepositoryInfo);
     setShowModal(false);
     setError(null);
     setRepo404(false);
+  };
+
+  const formatTimeRemaining = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -294,6 +424,18 @@ export default function Page() {
               ))}
             </BreadcrumbList>
           </Breadcrumb>
+          {currentSessionId && timeRemaining > 0 && (
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Session expires in:</span>
+              <span
+                className={`font-mono ${
+                  timeRemaining < 60000 ? "text-destructive" : ""
+                }`}
+              >
+                {formatTimeRemaining(timeRemaining)}
+              </span>
+            </div>
+          )}
           {githubUrl && (
             <a
               href={githubUrl}

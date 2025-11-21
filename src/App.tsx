@@ -9,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/document" element={<Page />} />
+        <Route path="/document/:sessionId" element={<Page />} />
       </Routes>
     </RepositoryProvider>
   );

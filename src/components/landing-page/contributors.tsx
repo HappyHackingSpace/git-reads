@@ -154,7 +154,7 @@ export default function Contributors() {
         <div className="mt-10 text-center text-muted-foreground text-sm italic">
           {!loading && !error && (
             <>
-              (Want to see your face here?{" "}
+              (Let's see your face here!{" "}
               <a
                 href={`https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}`}
                 className="underline underline-offset-2 transition-colors hover:text-accent-foreground"

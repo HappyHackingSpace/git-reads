@@ -6,8 +6,8 @@ import { useRepository } from "@/contexts/RepositoryContext";
 import { createMarkdownComponents } from "@/lib/markdown/components";
 import React, { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { splitMarkdown } from "@/lib/markdown/split";
-import { patchImages } from "@/lib/markdown/patchImages";
+import { splitMarkdown } from "@/lib/markdown/utils/split";
+import { patchImages } from "@/lib/markdown/utils/patchImages";
 import { useTOCJump } from "@/hooks/useTOCJump";
 import type { RepositoryInfo } from "@/types";
 

@@ -5,6 +5,6 @@ export {
   isValidUrl,
   sanitizeDataUri,
 } from "./security";
-export { splitMarkdown } from "./split";
-export { patchImages } from "./patchImages";
+export { splitMarkdown } from "./utils/split";
+export { patchImages } from "./utils/patchImages";
 export { createMarkdownComponents } from "./components";

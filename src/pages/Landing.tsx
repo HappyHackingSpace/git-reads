@@ -1,10 +1,10 @@
-import HeroSection from "@/components/landing-page/hero-section";
-import Features from "@/components/landing-page/features-roadmap";
-import WaitList from "@/components/landing-page/waitlist";
-import { DotsBackground } from "@/components/landing-page/background";
 import { AnimatedGroup } from "@/components/ui/animated-group";
-import { HeroHeader } from "@/components/landing-page/header";
-import Contributors from "@/components/landing-page/contributors";
+import { HeroHeader } from "@/components/landing/Header";
+import HeroSection from "@/components/landing/HeroSection";
+import Features from "@/components/landing/FeaturesRoadmap";
+import Contributors from "@/components/landing/Contributors";
+import WaitList from "@/components/landing/WaitList";
+import { DotsBackground } from "@/components/landing/Background";
 
 export default function Landing() {
   const heroShowcaseContainerVariants = {

@@ -2,12 +2,12 @@ import remarkEmoji from "remark-emoji";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import { useRepository } from "@/hooks/useRepository";
-import { createMarkdownComponents } from "./markdownComponents";
+import { useRepository } from "@/contexts/RepositoryContext";
+import { createMarkdownComponents } from "@/lib/markdown/components";
 import React, { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { splitMarkdown } from "@/utils/markdownSplit";
-import { patchImages } from "@/utils/patchImages";
+import { splitMarkdown } from "@/lib/markdown/split";
+import { patchImages } from "@/lib/markdown/patchImages";
 import { useTOCJump } from "@/hooks/useTOCJump";
 import type { RepositoryInfo } from "@/types";
 

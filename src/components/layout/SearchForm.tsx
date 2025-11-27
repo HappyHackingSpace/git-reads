@@ -5,9 +5,9 @@ import {
   SidebarInput,
 } from "@/components/ui/sidebar";
 import { Label } from "@/components/ui/label";
-import { useRepository } from "@/hooks/useRepository";
-import { FetchReadme } from "@/lib/github";
-import { parseTOC } from "@/lib/parser";
+import { useRepository } from "@/contexts/RepositoryContext";
+import { fetchReadme } from "@/lib/github/api";
+import { parseTOC } from "@/lib/markdown/parser";
 
 interface SearchFormProps extends React.ComponentProps<"form"> {
   search: string;
@@ -23,7 +23,7 @@ export function SearchForm({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    FetchReadme(repositoryInfo)
+    fetchReadme(repositoryInfo)
       .then((md) => parseTOC(md))
       .catch(() => []);
   }, [repositoryInfo]);

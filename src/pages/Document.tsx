@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,31 +16,24 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DocumentMarkdown } from "@/components/document/DocumentMarkdown";
 import { RepositoryInputModal } from "@/components/document/RepositoryInputModal";
-import { useRepository } from "@/hooks/useRepository";
-import { FetchReadme } from "@/lib/github";
-import { parseTOC } from "@/lib/parser";
-import { type TOCItem, type RepositoryInfo } from "@/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { useRepository } from "@/contexts";
+import { fetchReadme, RepoStars } from "@/lib/github";
+import { parseTOC } from "@/lib/markdown";
 import {
   createSession,
   getSession,
   updateSessionAccess,
   deleteSession,
   getSessionTimeRemaining,
-} from "@/utils/sessionManager";
-import { RepoStars } from "@/utils/FetchRepoStars";
+} from "@/lib/session";
+import type { TOCItem, RepositoryInfo } from "@/types";
 
 function ReadmeSkeleton() {
   return (
-    <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4 [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 [&>h3:first-child]:mt-0 [&>h4:first-child]:mt-0 [&>h5:first-child]:mt-0 [&>h6:first-child]:mt-0">
+    <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4">
       <Skeleton className="h-11 sm:h-14 w-3/4 mb-4 rounded-md" />
       <Skeleton className="h-4 w-full mb-2" />
       <Skeleton className="h-4 w-9/12 mb-2" />
@@ -47,24 +46,17 @@ function ReadmeSkeleton() {
         <Skeleton className="h-4 w-2/4 mb-2 ml-4" />
         <Skeleton className="h-4 w-2/5 mb-2 ml-4" />
       </div>
-      <Skeleton className="h-8 sm:h-10 w-2/6 mb-3 rounded-md" />
-      <Skeleton className="h-4 w-11/12 mb-2" />
-      <Skeleton className="h-4 w-2/3 mb-2" />
-      <div className="mb-7">
-        <Skeleton className="h-4 w-full mb-1 rounded-sm" />
-        <Skeleton className="h-4 w-11/12 mb-1 rounded-sm" />
-        <Skeleton className="h-4 w-3/5 mb-1 rounded-sm" />
-      </div>
-      <div className="mb-8">
-        <Skeleton className="h-4 w-48 mb-1 rounded" />
-        <Skeleton className="h-4 w-96 mb-1 rounded" />
-        <Skeleton className="h-4 w-36 mb-1 rounded" />
-      </div>
     </div>
   );
 }
 
-export default function Page() {
+function formatTimeRemaining(ms: number): string {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+export default function Document() {
   const navigate = useNavigate();
   const { sessionId } = useParams<{ sessionId?: string }>();
   const { repositoryInfo, setRepositoryInfo } = useRepository();
@@ -84,6 +76,7 @@ export default function Page() {
 
   useEffect(() => {
     let isMounted = true;
+
     if (sessionId) {
       getSession(sessionId).then((session) => {
         if (!isMounted) return;
@@ -101,6 +94,7 @@ export default function Page() {
     } else {
       setShowModal(true);
     }
+
     return () => {
       isMounted = false;
     };
@@ -199,18 +193,21 @@ export default function Page() {
         setIsLoading(true);
         setError(null);
         setRepo404(false);
+
         if (!repositoryInfo) {
           throw new Error("Missing repository info");
         }
-        const content = await FetchReadme(repositoryInfo);
-        if (cancelled) return;
-        setMarkdown(content);
 
+        const content = await fetchReadme(repositoryInfo);
+        if (cancelled) return;
+
+        setMarkdown(content);
         const parsedTOC = parseTOC(content);
         setTocItems(parsedTOC);
       } catch (err) {
         let errorMessage =
           err instanceof Error ? err.message : "Failed to load README content";
+
         if (
           errorMessage.toLowerCase().includes("404") ||
           errorMessage.toLowerCase().includes("not found")
@@ -232,9 +229,6 @@ export default function Page() {
       cancelled = true;
     };
   }, [repositoryInfo, showModal, setRepositoryInfo]);
-
-  useEffect(() => {
-  }, [repositoryInfo?.owner, repositoryInfo?.repo]);
 
   useEffect(() => {
     if (!markdown || isLoading) return;
@@ -371,19 +365,11 @@ export default function Page() {
     }
 
     setCurrentSessionId(newSessionId);
-
     navigate(`/document/${newSessionId}`, { replace: true });
-
     setRepositoryInfo(newRepositoryInfo);
     setShowModal(false);
     setError(null);
     setRepo404(false);
-  };
-
-  const formatTimeRemaining = (ms: number): string => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   return (

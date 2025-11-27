@@ -22,9 +22,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useRepository } from "@/hooks/useRepository";
-import { FetchReadme, FetchBranches } from "@/lib/github";
-import { parseTOC } from "@/lib/parser";
+import { useRepository } from "@/contexts/RepositoryContext";
+import { fetchReadme, fetchBranches } from "@/lib/github/api";
+import { parseTOC } from "@/lib/markdown/parser";
 import { type TOCItem } from "@/types";
 import { useNavigate } from "react-router-dom";
 
@@ -251,7 +251,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     async function loadBranches() {
       try {
         if (repositoryInfo) {
-          const branchList = await FetchBranches(repositoryInfo);
+          const branchList = await fetchBranches(repositoryInfo);
           setBranches(branchList);
         }
       } catch (error) {
@@ -273,7 +273,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     async function loadReadmeTOC() {
       try {
         setIsLoading(true);
-        const markdown = await FetchReadme(repositoryInfo);
+        const markdown = await fetchReadme(repositoryInfo);
         const tocItems = parseTOC(markdown);
         const convertedNavItems = convertTOCToNavItems(tocItems);
         setNavItems(convertedNavItems);

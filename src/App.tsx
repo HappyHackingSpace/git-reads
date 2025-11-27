@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Page from "./pages/Document";
-import { RepositoryProvider } from "@/contexts/RepositoryProvider";
+import { motion } from "motion/react";
+import { RepositoryProvider } from "@/contexts";
+import Document from "@/pages/Document";
 import Landing from "@/pages/Landing";
-import { motion } from "framer-motion";
 
 function App() {
   return (
@@ -15,8 +15,8 @@ function App() {
       <RepositoryProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/document" element={<Page />} />
-          <Route path="/document/:sessionId" element={<Page />} />
+          <Route path="/document" element={<Document />} />
+          <Route path="/document/:sessionId" element={<Document />} />
         </Routes>
       </RepositoryProvider>
     </motion.div>

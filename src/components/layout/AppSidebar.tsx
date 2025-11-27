@@ -34,7 +34,10 @@ function SidebarSkeleton() {
           <div className="h-4 w-3/4 bg-muted animate-pulse rounded mb-2" />
           <div className="flex flex-col gap-2 pl-2">
             {[1, 2, 3].map((row) => (
-              <div key={row} className="h-3 w-full bg-muted animate-pulse rounded" />
+              <div
+                key={row}
+                className="h-3 w-full bg-muted animate-pulse rounded"
+              />
             ))}
           </div>
         </div>

@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { SidebarGroup, SidebarGroupContent, SidebarInput } from "@/components/ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarInput,
+} from "@/components/ui/sidebar";
 import { Label } from "@/components/ui/label";
 import { useRepository } from "@/hooks/useRepository";
 import { FetchReadme } from "@/lib/github";
@@ -25,7 +29,7 @@ export function SearchForm({
   }, [repositoryInfo]);
 
   return (
-    <form {...props} autoComplete="off" onSubmit={e => e.preventDefault()}>
+    <form {...props} autoComplete="off" onSubmit={(e) => e.preventDefault()}>
       <SidebarGroup className="py-0">
         <SidebarGroupContent className="relative">
           <Label htmlFor="sidebar-search" className="sr-only">
@@ -37,7 +41,7 @@ export function SearchForm({
             value={search}
             placeholder="Search the docs..."
             className="pl-8"
-            onChange={e => onSearchChange(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
             spellCheck={false}
             autoComplete="off"
           />

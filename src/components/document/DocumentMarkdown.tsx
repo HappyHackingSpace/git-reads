@@ -1,24 +1,16 @@
-import remarkEmoji from "remark-emoji";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import { useRepository } from "@/contexts/RepositoryContext";
-import { createMarkdownComponents } from "@/lib/markdown/components";
-import React, { useMemo, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { patchImages } from "@/lib/markdown/utils/patchImages";
-import { useTOCJump } from "@/hooks/useTOCJump";
-import type { RepositoryInfo } from "@/types";
+import remarkEmoji from "remark-emoji"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
+import { useRepository } from "@/contexts/RepositoryContext"
+import { createMarkdownComponents } from "@/lib/markdown/components"
+import React, { useMemo, useCallback } from "react"
+import { Button } from "@/components/ui/button"
+import { patchImages } from "@/lib/markdown/utils/patchImages"
+import { useTOCJump } from "@/hooks/useTOCJump"
+import type { RepositoryInfo } from "@/types"
 
-function NavButton({
-  onClick,
-  disabled,
-  children,
-}: {
-  onClick: () => void;
-  disabled: boolean;
-  children: React.ReactNode;
-}) {
+function NavButton({ onClick, disabled, children }: { onClick: () => void; disabled: boolean; children: React.ReactNode }) {
   return (
     <Button
       onClick={onClick}
@@ -30,41 +22,25 @@ function NavButton({
     >
       {children}
     </Button>
-  );
+  )
 }
 
-function PaginationNav({
-  idx,
-  setIdx,
-  total,
-}: {
-  idx: number;
-  setIdx: (idx: number | ((prev: number) => number)) => void;
-  total: number;
-}) {
+function PaginationNav({ idx, setIdx, total }: { idx: number; setIdx: (idx: number | ((prev: number) => number)) => void; total: number }) {
   const handlePrev = useCallback(() => {
-    setIdx((prev) => {
-      const next = Math.max(0, prev - 1);
-      if (next !== prev) {
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 0);
-      }
-      return next;
-    });
-  }, [setIdx]);
+    setIdx(prev => {
+      const next = Math.max(0, prev - 1)
+      if (next !== prev) setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0)
+      return next
+    })
+  }, [setIdx])
 
   const handleNext = useCallback(() => {
-    setIdx((prev) => {
-      const next = Math.min(total - 1, prev + 1);
-      if (next !== prev) {
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 0);
-      }
-      return next;
-    });
-  }, [setIdx, total]);
+    setIdx(prev => {
+      const next = Math.min(total - 1, prev + 1)
+      if (next !== prev) setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0)
+      return next
+    })
+  }, [setIdx, total])
 
   return (
     <div className="flex justify-between items-center gap-2 my-2">
@@ -78,73 +54,61 @@ function PaginationNav({
         Next &#8594;
       </NavButton>
     </div>
-  );
+  )
 }
 
 type Props = {
-  chunks: string[];
-  pageIndex: number;
-  onPageChange: (idx: number) => void;
-};
+  chunks: string[]
+  pageIndex: number
+  onPageChange: (idx: number) => void
+}
 
-export function DocumentMarkdown({
-  chunks,
-  pageIndex,
-  onPageChange,
-}: Props) {
-  const { repositoryInfo } = useRepository();
-  const safePageIndex = Math.min(Math.max(0, pageIndex), Math.max(chunks.length - 1, 0));
+export function DocumentMarkdown({ chunks, pageIndex, onPageChange }: Props) {
+  const { repositoryInfo } = useRepository()
+  const safePageIndex = Math.min(Math.max(0, pageIndex), Math.max(chunks.length - 1, 0))
   const setIdx = useCallback(
     (next: number | ((prev: number) => number)) => {
-      const value = typeof next === "function" ? next(safePageIndex) : next;
-      const clamped = Math.min(Math.max(0, value), Math.max(chunks.length - 1, 0));
-      onPageChange(clamped);
+      const value = typeof next === "function" ? next(safePageIndex) : next
+      const clamped = Math.min(Math.max(0, value), Math.max(chunks.length - 1, 0))
+      onPageChange(clamped)
     },
     [chunks.length, onPageChange, safePageIndex]
-  );
-  // Perform the validation after hooks to avoid calling hooks conditionally (lint error)
+  )
   const isRepoInvalid =
     !repositoryInfo ||
     typeof repositoryInfo.owner !== "string" ||
-    typeof repositoryInfo.repo !== "string";
-  useTOCJump(chunks, safePageIndex, (i: number) => setIdx(i));
+    typeof repositoryInfo.repo !== "string"
+  useTOCJump(chunks, safePageIndex, (i: number) => setIdx(i))
 
-  // Use non-null assertion since we check validity below
-  const repo = repositoryInfo as RepositoryInfo;
+  const repo = repositoryInfo as RepositoryInfo
   const md = useMemo(
     () => (isRepoInvalid ? "" : patchImages(chunks[safePageIndex] || "", repo)),
     [chunks, safePageIndex, repo, isRepoInvalid]
-  );
+  )
   const components = useMemo(
     () =>
       isRepoInvalid ? {} : createMarkdownComponents({ repositoryInfo: repo }),
     [repo, isRepoInvalid]
-  );
+  )
 
   if (isRepoInvalid)
-    return (
-      <div className="text-destructive p-4">Invalid repository information</div>
-    );
-
-  const Markup = (
-    <ReactMarkdown
-      remarkPlugins={[remarkEmoji, remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
-      components={components}
-    >
-      {md}
-    </ReactMarkdown>
-  );
+    return <div className="text-destructive p-4">Invalid repository information</div>
 
   return (
     <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4 [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 [&>h3:first-child]:mt-0 [&>h4:first-child]:mt-0 [&>h5:first-child]:mt-0 [&>h6:first-child]:mt-0">
       {chunks.length > 1 && (
         <PaginationNav idx={safePageIndex} setIdx={setIdx} total={chunks.length} />
       )}
-      {Markup}
+      <ReactMarkdown
+        remarkPlugins={[remarkEmoji, remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+        components={components}
+      >
+        {md}
+      </ReactMarkdown>
       {chunks.length > 1 && (
         <PaginationNav idx={safePageIndex} setIdx={setIdx} total={chunks.length} />
       )}
     </div>
-  );
+  )
 }

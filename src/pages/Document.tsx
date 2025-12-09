@@ -1,28 +1,12 @@
 import { useState, useEffect, useRef, Fragment, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { GitHubLogoIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { TextSelectionPopup } from "@/components/document/TextSelectionPopup";
 import { useHighlights } from "@/hooks/useHighlights";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocumentMarkdown } from "@/components/document/DocumentMarkdown";
@@ -31,12 +15,7 @@ import { useRepository } from "@/contexts";
 import { fetchReadme, RepoStars } from "@/lib/github";
 import { parseTOC } from "@/lib/markdown";
 import { splitMarkdown } from "@/lib/markdown/utils/split";
-import {
-  createSession,
-  getSession,
-  deleteSession,
-  getSessionTimeRemaining,
-} from "@/lib/session";
+import { createSession, getSession, deleteSession, getSessionTimeRemaining } from "@/lib/session";
 import type { TOCItem, RepositoryInfo } from "@/types";
 import type { Highlight } from "@/types/highlight";
 
@@ -100,7 +79,6 @@ export default function Document() {
 
   useEffect(() => {
     let isMounted = true;
-
     if (sessionId) {
       getSession(sessionId).then((session) => {
         if (!isMounted) return;
@@ -109,9 +87,7 @@ export default function Document() {
           setCurrentSessionId(sessionId);
           setExpiresAt(session.expiresAt);
         } else {
-          setError(
-            "Session expired or invalid. Please enter a new repository URL."
-          );
+          setError("Session expired or invalid. Please enter a new repository URL.");
           setShowModal(true);
           navigate("/document", { replace: true });
         }
@@ -119,7 +95,6 @@ export default function Document() {
     } else {
       setShowModal(true);
     }
-
     return () => {
       isMounted = false;
     };
@@ -127,13 +102,10 @@ export default function Document() {
 
   useEffect(() => {
     if (!currentSessionId || !expiresAt) return;
-
     let cancelled = false;
-
     const checkExpiration = async () => {
       const remaining = await getSessionTimeRemaining(currentSessionId);
       if (cancelled) return;
-
       if (remaining <= 0) {
         setError("Session expired. Please enter a new repository URL.");
         setShowModal(true);
@@ -142,10 +114,8 @@ export default function Document() {
         navigate("/document", { replace: true });
       }
     };
-
     checkExpiration();
     expireCheckTimerRef.current = window.setInterval(checkExpiration, 60000);
-
     return () => {
       cancelled = true;
       if (expireCheckTimerRef.current) {
@@ -156,41 +126,26 @@ export default function Document() {
 
   useEffect(() => {
     if (!repositoryInfo?.owner || !repositoryInfo?.repo || showModal) {
-      if (showModal) {
-        setIsLoading(false);
-      }
+      if (showModal) setIsLoading(false);
       return;
     }
-
     let cancelled = false;
-
     async function loadReadme() {
       try {
         setIsLoading(true);
         setError(null);
         setRepo404(false);
-
-        if (!repositoryInfo) {
-          throw new Error("Missing repository info");
-        }
-
+        if (!repositoryInfo) throw new Error("Missing repository info");
         const content = await fetchReadme(repositoryInfo);
         if (cancelled) return;
-
         setMarkdown(content);
-        const parsedTOC = parseTOC(content);
-        setTocItems(parsedTOC);
+        setTocItems(parseTOC(content));
         const newChunks = splitMarkdown(content);
         setChunks(newChunks);
         setPageIndex(0);
-
-        requestAnimationFrame(() => {
-          setTimeout(() => reloadHighlights(0), 50);
-        });
+        requestAnimationFrame(() => setTimeout(() => reloadHighlights(0), 50));
       } catch (err) {
-        let errorMessage =
-          err instanceof Error ? err.message : "Failed to load README content";
-
+        let errorMessage = err instanceof Error ? err.message : "Failed to load README content";
         if (
           errorMessage.toLowerCase().includes("404") ||
           errorMessage.toLowerCase().includes("not found")
@@ -205,9 +160,7 @@ export default function Document() {
         setIsLoading(false);
       }
     }
-
     loadReadme();
-
     return () => {
       cancelled = true;
     };
@@ -215,36 +168,28 @@ export default function Document() {
 
   useEffect(() => {
     if (!markdown || isLoading) return;
-
     function handleScroll() {
       if (!contentRef.current) return;
-
       const headings = Array.from(
         contentRef.current.querySelectorAll("h1, h2, h3, h4, h5, h6")
       ) as HTMLElement[];
-
       if (headings.length === 0) {
         setActiveHeadingId("");
         return;
       }
-
       const scrollY = window.scrollY;
       const headerOffset = 100;
       const threshold = scrollY + headerOffset;
-
       let activeHeading: HTMLElement | null = null;
-
       for (let i = headings.length - 1; i >= 0; i--) {
         const heading = headings[i];
         const rect = heading.getBoundingClientRect();
         const headingTop = scrollY + rect.top;
-
         if (headingTop <= threshold) {
           activeHeading = heading;
           break;
         }
       }
-
       if (!activeHeading && headings.length > 0) {
         const firstHeading = headings[0];
         const firstRect = firstHeading.getBoundingClientRect();
@@ -254,14 +199,12 @@ export default function Document() {
         }
         activeHeading = firstHeading;
       }
-
       if (activeHeading && activeHeading.id) {
         setActiveHeadingId(activeHeading.id);
       } else {
         setActiveHeadingId("");
       }
     }
-
     let ticking = false;
     const throttledScroll = () => {
       if (!ticking) {
@@ -272,10 +215,8 @@ export default function Document() {
         ticking = true;
       }
     };
-
     window.addEventListener("scroll", throttledScroll, { passive: true });
     handleScroll();
-
     return () => {
       window.removeEventListener("scroll", throttledScroll);
     };
@@ -283,48 +224,34 @@ export default function Document() {
 
   const getBreadcrumbPath = (): { title: string; id: string }[] => {
     const path: { title: string; id: string }[] = [];
-
     if (!activeHeadingId || tocItems.length === 0) {
       path.push({ title: "README", id: "" });
       return path;
     }
-
-    const activeIndex = tocItems.findIndex(
-      (item) => item.id === activeHeadingId
-    );
-
+    const activeIndex = tocItems.findIndex(item => item.id === activeHeadingId);
     if (activeIndex === -1) {
       path.push({ title: "README", id: "" });
       return path;
     }
-
     const activeItem = tocItems[activeIndex];
     const activeLevel = activeItem.level;
-
     const pathItems: TOCItem[] = [];
-
     if (activeLevel > 1) {
       pathItems.push(activeItem);
     }
-
     for (let i = activeIndex - 1; i >= 0; i--) {
       const item = tocItems[i];
       if (item.level < activeLevel && item.level > 1) {
-        const hasHigherLevel = pathItems.some((p) => p.level <= item.level);
-        if (!hasHigherLevel) {
-          pathItems.unshift(item);
-        }
+        const hasHigherLevel = pathItems.some(p => p.level <= item.level);
+        if (!hasHigherLevel) pathItems.unshift(item);
       }
     }
-
-    pathItems.forEach((item) => {
+    pathItems.forEach(item => {
       path.push({ title: item.text, id: item.id });
     });
-
     if (path.length === 0) {
       path.push({ title: "README", id: "" });
     }
-
     return path;
   };
 
@@ -334,10 +261,7 @@ export default function Document() {
   const navigateToHighlight = (highlight: Highlight) => {
     const targetPageMatch = highlight.container_xpath?.match(/page:(\d+)/);
     const targetPage = targetPageMatch
-      ? Math.min(
-          Math.max(0, parseInt(targetPageMatch[1] ?? "0", 10)),
-          highlightPageCount - 1
-        )
+      ? Math.min(Math.max(0, parseInt(targetPageMatch[1] ?? "0", 10)), highlightPageCount - 1)
       : 0;
     setTargetHighlightId(highlight.id);
     setPageIndex(targetPage);
@@ -357,7 +281,6 @@ export default function Document() {
         setTargetHighlightId(null);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [targetHighlightId, pageIndex]);
 
@@ -370,19 +293,13 @@ export default function Document() {
     if (currentSessionId) {
       await deleteSession(currentSessionId);
     }
-
     const newSessionId = await createSession(newRepositoryInfo);
-
     if (!newSessionId) {
       setError("Failed to create session. Please try again.");
       return;
     }
-
     const session = await getSession(newSessionId);
-    if (session) {
-      setExpiresAt(session.expiresAt);
-    }
-
+    if (session) setExpiresAt(session.expiresAt);
     setCurrentSessionId(newSessionId);
     navigate(`/document/${newSessionId}`, { replace: true });
     setRepositoryInfo(newRepositoryInfo);
@@ -409,15 +326,13 @@ export default function Document() {
             <BreadcrumbList className="flex-wrap gap-1">
               {breadcrumbPath.map((item, index) => (
                 <Fragment key={`${item.id}-${index}`}>
-                  {index > 0 && (
-                    <BreadcrumbSeparator className="hidden sm:block" />
-                  )}
+                  {index > 0 && <BreadcrumbSeparator className="hidden sm:block" />}
                   <BreadcrumbItem className="max-w-[200px] sm:max-w-none">
                     {item.id && index < breadcrumbPath.length - 1 ? (
                       <BreadcrumbLink
                         href={`#${item.id}`}
                         className="truncate text-xs sm:text-sm"
-                        onClick={(e) => {
+                        onClick={e => {
                           e.preventDefault();
                           const element = document.getElementById(item.id);
                           if (element) {
@@ -458,12 +373,8 @@ export default function Document() {
                 style={{ right: 0 }}
               >
                 <div className="space-y-1 flex flex-col items-center text-center">
-                  <p className="font-semibold w-full text-center">
-                    Session Expires
-                  </p>
-                  <p className="text-xs opacity-90 w-full text-center">
-                    {formatExpireDate(expiresAt)}
-                  </p>
+                  <p className="font-semibold w-full text-center">Session Expires</p>
+                  <p className="text-xs opacity-90 w-full text-center">{formatExpireDate(expiresAt)}</p>
                 </div>
               </PopoverContent>
             </Popover>
@@ -479,10 +390,7 @@ export default function Document() {
               style={{ gap: 8 }}
             >
               <span className="flex items-center">
-                <RepoStars
-                  owner={repositoryInfo.owner}
-                  repo={repositoryInfo.repo}
-                />
+                <RepoStars owner={repositoryInfo.owner} repo={repositoryInfo.repo} />
                 <GitHubLogoIcon width={24} height={24} />
               </span>
               <span className="sr-only">View this repository on GitHub</span>
@@ -515,7 +423,7 @@ export default function Document() {
               <DocumentMarkdown
                 chunks={chunks}
                 pageIndex={pageIndex}
-                onPageChange={(idx) => {
+                onPageChange={idx => {
                   setPageIndex(idx);
                   requestAnimationFrame(() => {
                     setTimeout(() => reloadHighlights(idx), 30);
@@ -552,8 +460,7 @@ export default function Document() {
                         {Math.min(
                           (highlight.container_xpath?.match(/page:(\d+)/)?.[1]
                             ? parseInt(
-                                highlight.container_xpath
-                                  ?.match(/page:(\d+)/)?.[1] ?? "0",
+                                highlight.container_xpath?.match(/page:(\d+)/)?.[1] ?? "0",
                                 10
                               ) + 1
                             : 1),

@@ -9,12 +9,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false, // Auth kullanmıyoruz
+    persistSession: false,
     autoRefreshToken: false,
   },
 });
 
-// Database types
 export interface Session {
   id: string;
   owner: string;

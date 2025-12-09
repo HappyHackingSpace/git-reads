@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { createHighlight, getHighlights } from "@/lib/highlights/api";
 import type { Highlight } from "@/types/highlight";
 
@@ -6,14 +6,25 @@ function removeExistingHighlights(container: Element) {
   const highlights = container.querySelectorAll("mark[data-highlight-id]");
   highlights.forEach((mark) => {
     const parent = mark.parentNode;
-    if (parent) {
+    if (parent && parent.contains(mark)) {
       while (mark.firstChild) {
         parent.insertBefore(mark.firstChild, mark);
       }
-      parent.removeChild(mark);
+      try {
+        parent.removeChild(mark);
+      } catch (err) {
+        console.warn("Skipping stale highlight node", err);
+      }
     }
   });
   container.normalize();
+}
+
+function getHighlightPage(highlight: Highlight): number | null {
+  const pageToken = highlight.container_xpath?.match(/page:(\d+)/);
+  if (!pageToken) return null;
+  const parsed = parseInt(pageToken[1], 10);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function applyHighlight(container: Element, highlight: Highlight) {
@@ -176,21 +187,41 @@ function isSelectionHighlighted(
 
 export function useHighlights(
   sessionId: string | null,
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement>,
+  currentPage: number,
+  onHighlightsChange?: (highlights: Highlight[]) => void
 ) {
   const highlightsRef = useRef<Highlight[]>([]);
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
 
-  const loadAndApplyHighlights = useCallback(async () => {
-    if (!sessionId || !containerRef.current) return;
-    removeExistingHighlights(containerRef.current);
+  const loadAndApplyHighlights = useCallback(
+    async (pageOverride?: number) => {
+      if (!sessionId) return;
+      const container = containerRef.current;
+      if (!container || !container.isConnected) return;
+      const activePage = pageOverride ?? currentPage;
+      removeExistingHighlights(container);
 
-    const highlights = await getHighlights(sessionId);
-    highlightsRef.current = highlights;
+      const highlights = await getHighlights(sessionId);
+      highlightsRef.current = highlights;
+      setHighlights(highlights);
+      onHighlightsChange?.(highlights);
 
-    for (const highlight of highlights) {
-      applyHighlight(containerRef.current, highlight);
-    }
-  }, [sessionId, containerRef]);
+      const liveContainer = containerRef.current;
+      if (!liveContainer || !liveContainer.isConnected) return;
+
+      for (const highlight of highlights) {
+        const targetPage = getHighlightPage(highlight);
+        if (targetPage !== null && targetPage !== activePage) continue;
+        try {
+          applyHighlight(liveContainer, highlight);
+        } catch (err) {
+          console.warn("Skipping highlight application", err);
+        }
+      }
+    },
+    [sessionId, containerRef, currentPage, onHighlightsChange]
+  );
 
   const handleHighlight = useCallback(
     async (color: string) => {
@@ -219,7 +250,7 @@ export function useHighlights(
           text: selectedText,
           startOffset: start,
           endOffset: end,
-          containerXPath: "/div",
+          containerXPath: `page:${currentPage}`,
           color,
         });
 
@@ -230,7 +261,7 @@ export function useHighlights(
         console.error("Error creating highlight:", error);
       }
     },
-    [sessionId, containerRef, loadAndApplyHighlights]
+    [sessionId, containerRef, loadAndApplyHighlights, currentPage]
   );
 
   useEffect(() => {
@@ -239,7 +270,11 @@ export function useHighlights(
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [loadAndApplyHighlights]);
+  }, [loadAndApplyHighlights, currentPage]);
 
-  return { handleHighlight, reloadHighlights: loadAndApplyHighlights };
+  return {
+    handleHighlight,
+    reloadHighlights: loadAndApplyHighlights,
+    highlights,
+  };
 }

@@ -4,9 +4,8 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { useRepository } from "@/contexts/RepositoryContext";
 import { createMarkdownComponents } from "@/lib/markdown/components";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { splitMarkdown } from "@/lib/markdown/utils/split";
 import { patchImages } from "@/lib/markdown/utils/patchImages";
 import { useTOCJump } from "@/hooks/useTOCJump";
 import type { RepositoryInfo } from "@/types";
@@ -40,7 +39,7 @@ function PaginationNav({
   total,
 }: {
   idx: number;
-  setIdx: React.Dispatch<React.SetStateAction<number>>;
+  setIdx: (idx: number | ((prev: number) => number)) => void;
   total: number;
 }) {
   const handlePrev = useCallback(() => {
@@ -82,22 +81,39 @@ function PaginationNav({
   );
 }
 
-export function DocumentMarkdown({ markdown }: { markdown: string }) {
+type Props = {
+  chunks: string[];
+  pageIndex: number;
+  onPageChange: (idx: number) => void;
+};
+
+export function DocumentMarkdown({
+  chunks,
+  pageIndex,
+  onPageChange,
+}: Props) {
   const { repositoryInfo } = useRepository();
-  const [idx, setIdx] = useState(0);
-  const chunks = useMemo(() => splitMarkdown(markdown), [markdown]);
+  const safePageIndex = Math.min(Math.max(0, pageIndex), Math.max(chunks.length - 1, 0));
+  const setIdx = useCallback(
+    (next: number | ((prev: number) => number)) => {
+      const value = typeof next === "function" ? next(safePageIndex) : next;
+      const clamped = Math.min(Math.max(0, value), Math.max(chunks.length - 1, 0));
+      onPageChange(clamped);
+    },
+    [chunks.length, onPageChange, safePageIndex]
+  );
   // Perform the validation after hooks to avoid calling hooks conditionally (lint error)
   const isRepoInvalid =
     !repositoryInfo ||
     typeof repositoryInfo.owner !== "string" ||
     typeof repositoryInfo.repo !== "string";
-  useTOCJump(chunks, idx, setIdx);
+  useTOCJump(chunks, safePageIndex, (i: number) => setIdx(i));
 
   // Use non-null assertion since we check validity below
   const repo = repositoryInfo as RepositoryInfo;
   const md = useMemo(
-    () => (isRepoInvalid ? "" : patchImages(chunks[idx] || "", repo)),
-    [chunks, idx, repo, isRepoInvalid]
+    () => (isRepoInvalid ? "" : patchImages(chunks[safePageIndex] || "", repo)),
+    [chunks, safePageIndex, repo, isRepoInvalid]
   );
   const components = useMemo(
     () =>
@@ -123,11 +139,11 @@ export function DocumentMarkdown({ markdown }: { markdown: string }) {
   return (
     <div className="document-markdown w-full max-w-4xl mx-auto px-2 sm:px-4 [&>h1:first-child]:mt-0 [&>h2:first-child]:mt-0 [&>h3:first-child]:mt-0 [&>h4:first-child]:mt-0 [&>h5:first-child]:mt-0 [&>h6:first-child]:mt-0">
       {chunks.length > 1 && (
-        <PaginationNav idx={idx} setIdx={setIdx} total={chunks.length} />
+        <PaginationNav idx={safePageIndex} setIdx={setIdx} total={chunks.length} />
       )}
       {Markup}
       {chunks.length > 1 && (
-        <PaginationNav idx={idx} setIdx={setIdx} total={chunks.length} />
+        <PaginationNav idx={safePageIndex} setIdx={setIdx} total={chunks.length} />
       )}
     </div>
   );

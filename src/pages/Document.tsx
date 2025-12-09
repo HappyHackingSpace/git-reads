@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -30,6 +30,7 @@ import { RepositoryInputModal } from "@/components/document/RepositoryInputModal
 import { useRepository } from "@/contexts";
 import { fetchReadme, RepoStars } from "@/lib/github";
 import { parseTOC } from "@/lib/markdown";
+import { splitMarkdown } from "@/lib/markdown/utils/split";
 import {
   createSession,
   getSession,
@@ -37,6 +38,7 @@ import {
   getSessionTimeRemaining,
 } from "@/lib/session";
 import type { TOCItem, RepositoryInfo } from "@/types";
+import type { Highlight } from "@/types/highlight";
 
 function ReadmeSkeleton() {
   return (
@@ -81,13 +83,19 @@ export default function Document() {
   const [repo404, setRepo404] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [chunks, setChunks] = useState<string[]>([]);
+  const [allHighlights, setAllHighlights] = useState<Highlight[]>([]);
+  const [targetHighlightId, setTargetHighlightId] = useState<string | null>(null);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const expireCheckTimerRef = useRef<number | null>(null);
 
   const { handleHighlight, reloadHighlights } = useHighlights(
     currentSessionId,
-    contentRef as React.RefObject<HTMLDivElement>
+    contentRef as React.RefObject<HTMLDivElement>,
+    pageIndex,
+    setAllHighlights
   );
 
   useEffect(() => {
@@ -172,10 +180,13 @@ export default function Document() {
         setMarkdown(content);
         const parsedTOC = parseTOC(content);
         setTocItems(parsedTOC);
+        const newChunks = splitMarkdown(content);
+        setChunks(newChunks);
+        setPageIndex(0);
 
-        setTimeout(() => {
-          reloadHighlights();
-        }, 100);
+        requestAnimationFrame(() => {
+          setTimeout(() => reloadHighlights(0), 50);
+        });
       } catch (err) {
         let errorMessage =
           err instanceof Error ? err.message : "Failed to load README content";
@@ -318,6 +329,37 @@ export default function Document() {
   };
 
   const breadcrumbPath = getBreadcrumbPath();
+  const highlightPageCount = useMemo(() => chunks.length || 1, [chunks]);
+
+  const navigateToHighlight = (highlight: Highlight) => {
+    const targetPageMatch = highlight.container_xpath?.match(/page:(\d+)/);
+    const targetPage = targetPageMatch
+      ? Math.min(
+          Math.max(0, parseInt(targetPageMatch[1] ?? "0", 10)),
+          highlightPageCount - 1
+        )
+      : 0;
+    setTargetHighlightId(highlight.id);
+    setPageIndex(targetPage);
+    setTimeout(() => {
+      reloadHighlights(targetPage);
+    }, 10);
+  };
+
+  useEffect(() => {
+    if (!targetHighlightId) return;
+    const timer = setTimeout(() => {
+      const mark = contentRef.current?.querySelector(
+        `mark[data-highlight-id="${targetHighlightId}"]`
+      );
+      if (mark) {
+        mark.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTargetHighlightId(null);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [targetHighlightId, pageIndex]);
 
   const githubUrl =
     repositoryInfo?.owner && repositoryInfo?.repo
@@ -470,10 +512,62 @@ export default function Document() {
             )
           ) : (
             <div ref={contentRef}>
-              <DocumentMarkdown markdown={markdown} />
+              <DocumentMarkdown
+                chunks={chunks}
+                pageIndex={pageIndex}
+                onPageChange={(idx) => {
+                  setPageIndex(idx);
+                  requestAnimationFrame(() => {
+                    setTimeout(() => reloadHighlights(idx), 30);
+                  });
+                }}
+              />
             </div>
           )}
         </div>
+        {allHighlights.length > 0 && (
+          <div className="fixed right-3 bottom-3 z-20 w-72 max-h-[60vh] rounded-md border bg-background shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 border-b">
+              <p className="text-sm font-semibold">Highlights</p>
+              <span className="text-xs text-muted-foreground">
+                Page {pageIndex + 1}/{highlightPageCount}
+              </span>
+            </div>
+            <div className="max-h-[50vh] overflow-y-auto">
+              {allHighlights.map((highlight) => (
+                <button
+                  key={highlight.id}
+                  type="button"
+                  className="w-full text-left px-3 py-2 hover:bg-accent focus:bg-accent focus:outline-none"
+                  onClick={() => navigateToHighlight(highlight)}
+                >
+                  <div className="flex items-start gap-2">
+                    <span
+                      className="mt-1 inline-block h-3 w-3 rounded-full border"
+                      style={{ backgroundColor: highlight.color }}
+                    />
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Page{" "}
+                        {Math.min(
+                          (highlight.container_xpath?.match(/page:(\d+)/)?.[1]
+                            ? parseInt(
+                                highlight.container_xpath
+                                  ?.match(/page:(\d+)/)?.[1] ?? "0",
+                                10
+                              ) + 1
+                            : 1),
+                          highlightPageCount
+                        )}
+                      </p>
+                      <p className="text-sm line-clamp-2">{highlight.text_content}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </SidebarInset>
     </SidebarProvider>
   );

@@ -28,13 +28,19 @@ export default function HighlightsFAB({
   const [open, setOpen] = useState(false);
   const highlightCount = allHighlights.length;
   const cardRef = useRef<HTMLDivElement>(null);
+  const fabButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
+
     function handleClick(e: MouseEvent) {
+      const card = cardRef.current;
+      const fabBtn = fabButtonRef.current;
       if (
-        cardRef.current &&
-        !cardRef.current.contains(e.target as Node)
+        card &&
+        !card.contains(e.target as Node) &&
+        fabBtn &&
+        !fabBtn.contains(e.target as Node)
       ) {
         setOpen(false);
       }
@@ -47,6 +53,7 @@ export default function HighlightsFAB({
     <>
       <div className="fixed right-7 bottom-7 z-50 flex flex-col items-end select-none">
         <button
+          ref={fabButtonRef}
           aria-label="View highlights"
           className={`
             relative flex items-center justify-center rounded-full
@@ -56,7 +63,7 @@ export default function HighlightsFAB({
             focus:outline-none focus-visible:ring-2 focus-visible:ring-ring
             hover:border-primary
           `}
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen((prev) => !prev)}
           style={{
             transition: "box-shadow 0.15s, border-color 0.15s",
           }}

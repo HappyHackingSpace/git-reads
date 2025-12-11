@@ -21,7 +21,6 @@ function getHighlightPage(highlight: Highlight, highlightPageCount: number) {
 
 export default function HighlightsFAB({
   allHighlights,
-  pageIndex,
   highlightPageCount,
   navigateToHighlight,
 }: HighlightsFABProps) {

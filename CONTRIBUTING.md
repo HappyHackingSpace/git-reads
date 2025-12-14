@@ -30,7 +30,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 Before contributing, please:
 
 1. Read through the [README.md](README.md) to understand the project
-2. Check the [existing issues](https://github.com/HappyHacingSpace/git-reads/issues) and [pull requests](https://github.com/HappyHacingSpace/git-reads/pulls)
+2. Check the [existing issues](https://github.com/HappyHackingSpace/git-reads/issues) and [pull requests](https://github.com/HappyHackingSpace/git-reads/pulls)
 3. Review the [roadmap](#feature-roadmap) in the README to understand planned features
 
 ## Development Setup
@@ -226,7 +226,7 @@ When reporting bugs, please include:
 6. **Screenshots**: Include if applicable
 7. **Console output**: Include any error messages
 
-Use the [bug report template](https://github.com/HappyHacingSpace/git-reads/issues/new?template=bug_report.yml).
+Use the [bug report template](https://github.com/HappyHackingSpace/git-reads/issues/new?template=bug_report.yml).
 
 ### Security Issues
 
@@ -238,7 +238,7 @@ We welcome feature suggestions! When proposing features:
 
 1. Check if it's already in the [roadmap](README.md#feature-roadmap)
 2. Search existing issues to avoid duplicates
-3. Use the [feature request template](https://github.com/HappyHacingSpace/git-reads/issues/new?template=feature_request.yml)
+3. Use the [feature request template](https://github.com/HappyHackingSpace/git-reads/issues/new?template=feature_request.yml)
 4. Clearly describe the problem and proposed solution
 5. Explain why this feature would be useful
 6. Consider implementation complexity
@@ -292,16 +292,16 @@ git-reads/
 
 ## Community
 
-- **Issues**: [Report bugs or request features](https://github.com/HappyHacingSpace/git-reads/issues)
-- **Pull Requests**: [Contribute code](https://github.com/HappyHacingSpace/git-reads/pulls)
-- **Discussions**: [Ask questions and share ideas](https://github.com/HappyHacingSpace/git-reads/discussions)
+- **Issues**: [Report bugs or request features](https://github.com/HappyHackingSpace/git-reads/issues)
+- **Pull Requests**: [Contribute code](https://github.com/HappyHackingSpace/git-reads/pulls)
+- **Discussions**: [Ask questions and share ideas](https://github.com/HappyHackingSpace/git-reads/discussions)
 
 ## Questions?
 
 If you have questions that are not addressed in this guide:
 
 1. Check the [README.md](README.md)
-2. Search existing [discussions](https://github.com/HappyHacingSpace/git-reads/discussions)
+2. Search existing [discussions](https://github.com/HappyHackingSpace/git-reads/discussions)
 3. Open a new discussion with the `question` label
 4. Join the conversation in existing issues and pull requests
 

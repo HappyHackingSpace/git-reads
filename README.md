@@ -44,7 +44,7 @@ GitReads transforms GitHub README files into beautifully formatted, easy-to-navi
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/HazarBakir/git-reads.git
+git clone https://github.com/HappyHackingSpace/git-reads.git
 cd git-reads
 ```
 
@@ -308,9 +308,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Links
 
 - **Documentation**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Issues**: [Report a bug](https://github.com/HazarBakir/git-reads/issues)
-- **Pull Requests**: [Contribute code](https://github.com/HazarBakir/git-reads/pulls)
-- **Discussions**: [Join the conversation](https://github.com/HazarBakir/git-reads/discussions)
+- **Issues**: [Report a bug](https://github.com/HappyHackingSpace/git-reads/issues)
+- **Pull Requests**: [Contribute code](https://github.com/HappyHackingSpace/git-reads/pulls)
+- **Discussions**: [Join the conversation](https://github.com/HappyHackingSpace/git-reads/discussions)
 
 ## Acknowledgments
 

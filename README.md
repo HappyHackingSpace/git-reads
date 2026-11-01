@@ -254,7 +254,6 @@ git-reads/
 │   ├── pages/            # Route page components
 │   ├── types/            # TypeScript type definitions
 │   └── utils/            # Helper functions and utilities
-├── database/             # Database schema documentation
 ├── supabase/             # Supabase migration files
 ├── public/               # Static assets (images, icons)
 └── ...config files
@@ -300,6 +299,10 @@ git-reads/
 - Verify you're on the same page where the highlight was created
 - Refresh the page and wait for highlights to load
 </details>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=HappyHackingSpace/git-reads&type=Date)](https://star-history.com/#HappyHackingSpace/git-reads&Date)
 
 ## License
 

@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type RefObject } from "react";
 import { Sparkles, AlertCircle, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TextSelectionPopupProps {
   onHighlight: (color: string) => void;
+  containerRef: RefObject<HTMLElement | null>;
 }
 
 const HIGHLIGHT_COLORS = [
@@ -36,7 +37,10 @@ const HIGHLIGHT_COLORS = [
   },
 ];
 
-export function TextSelectionPopup({ onHighlight }: TextSelectionPopupProps) {
+export function TextSelectionPopup({
+  onHighlight,
+  containerRef,
+}: TextSelectionPopupProps) {
   const [position, setPosition] = useState<{ x: number; y: number } | null>(
     null
   );
@@ -52,6 +56,10 @@ export function TextSelectionPopup({ onHighlight }: TextSelectionPopupProps) {
       }
 
       const range = selection.getRangeAt(0);
+      if (!containerRef.current?.contains(range.commonAncestorContainer)) {
+        setPosition(null);
+        return;
+      }
       const rect = range.getBoundingClientRect();
 
       const selectedText = selection.toString().trim();
@@ -73,7 +81,7 @@ export function TextSelectionPopup({ onHighlight }: TextSelectionPopupProps) {
       document.removeEventListener("selectionchange", handleSelectionChange);
       document.removeEventListener("mouseup", handleSelectionChange);
     };
-  }, []);
+  }, [containerRef]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

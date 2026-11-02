@@ -313,7 +313,7 @@ export default function Document() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <TextSelectionPopup onHighlight={handleHighlight} />
+        <TextSelectionPopup onHighlight={handleHighlight} containerRef={contentRef} />
         <RepositoryInputModal
           open={showModal}
           onOpenChange={setShowModal}
